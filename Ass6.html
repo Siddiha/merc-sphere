@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 6 - Professional Resume</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f0f2f5;
+        }
+
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .resume-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Download Button */
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .download-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Resume Styles */
+        .resume {
+            background: white;
+        }
+
+        .resume-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .title {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .resume-body {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 0;
+        }
+
+        .sidebar {
+            background: #f8fafc;
+            padding: 2rem;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #667eea;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: #764ba2;
+        }
+
+        /* Skills */
+        .skills-list {
+            list-style: none;
+        }
+
+        .skill-item {
+            margin-bottom: 1rem;
+        }
+
+        .skill-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: #374151;
+        }
+
+        .skill-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Languages */
+        .languages-list {
+            list-style: none;
+        }
+
+        .language-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .language-item:last-child {
+            border-bottom: none;
+        }
+
+        .language-level {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* Experience & Education */
+        .timeline-item {
+            margin-bottom: 2rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 1rem;
+            width: 2px;
+            height: calc(100% - 0.5rem);
+            background: #e5e7eb;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-date {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-company {
+            font-size: 1rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-description {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .timeline-description ul {
+            margin-left: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .timeline-description li {
+            margin-bottom: 0.3rem;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                font-size: 12pt;
+            }
+
+            .page-container {
+                padding: 0;
+            }
+
+            .download-btn {
+                display: none;
+            }
+
+            .resume-container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: none;
+                margin: 0;
+            }
+
+            .resume-header {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+                padding: 2rem;
+            }
+
+            .sidebar {
+                background: #f8fafc !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+
+            .section-title {
+                color: #1f2937 !important;
+                border-bottom-color: #667eea !important;
+            }
+
+            .section-title::after {
+                background: #764ba2 !important;
+            }
+
+            .skill-progress {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+
+            .timeline-item::before {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .page-container {
+                padding: 1rem;
+            }
+
+            .resume-body {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .name {
+                font-size: 2rem;
+            }
+
+            .title {
+                font-size: 1.1rem;
+            }
+
+            .download-btn {
+                position: static;
+                margin: 1rem auto;
+                display: block;
+                width: fit-content;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Download Button -->
+    <button class="download-btn" onclick="downloadPDF()">📄 Download PDF</button>
+
+    <!-- Loading Indicator -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Generating PDF...</p>
+    </div>
+
+    <div class="page-container">
+        <div class="resume-container" id="resume">
+            <div class="resume">
+                <!-- Header -->
+                <div class="resume-header">
+                    <div class="profile-image">👨‍💻</div>
+                    <h1 class="name">John Developer</h1>
+                    <p class="title">Full Stack Web Developer</p>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <span>📧</span>
+                            <span>john.developer@email.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <span>📱</span>
+                            <span>+1 (555) 123-4567</span>
+                        </div>
+                        <div class="contact-item">
+                            <span>📍</span>
+                            <span>San Francisco, CA</span>
+                        </div>
+                        <div class="contact-item">
+                            <span>🔗</span>
+                            <span>linkedin.com/in/johndeveloper</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="resume-body">
+                    <!-- Sidebar -->
+                    <div class="sidebar">
+                        <!-- Skills -->
+                        <div class="section">
+                            <h2 class="section-title">Skills</h2>
+                            <ul class="skills-list">
+                                <li class="skill-item">
+                                    <div class="skill-name">JavaScript</div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 90%;"></div>
+                                    </div>
+                                </li>
+                                <li class="skill-item">
+                                    <div class="skill-name">React.js</div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 85%;"></div>
+                                    </div>
+                                </li>
+                                <li class="skill-item">
+                                    <div class="skill-name">Node.js</div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 80%;"></div>
+                                    </div>
+                                </li>
+                                <li class="skill-item">
+                                    <div class="skill-name">Python</div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 75%;"></div>
+                                    </div>
+                                </li>
+                                <li class="skill-item">
+                                    <div class="skill-name">CSS/SCSS</div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 88%;"></div>
+                                    </div>
+                                </li>
+                                <li class="skill-item">
+                                    <div class="skill-name">MongoDB</div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 70%;"></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Languages -->
+                        <div class="section">
+                            <h2 class="section-title">Languages</h2>
+                            <ul class="languages-list">
+                                <li class="language-item">
+                                    <span>English</span>
+                                    <span class="language-level">Native</span>
+                                </li>
+                                <li class="language-item">
+                                    <span>Spanish</span>
+                                    <span class="language-level">Fluent</span>
+                                </li>
+                                <li class="language-item">
+                                    <span>French</span>
+                                    <span class="language-level">Intermediate</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Certifications -->
+                        <div class="section">
+                            <h2 class="section-title">Certifications</h2>
+                            <ul style="list-style: none;">
+                                <li style="margin-bottom: 0.8rem;">
+                                    <strong>AWS Certified Developer</strong><br>
+                                    <small style="color: #6b7280;">Amazon Web Services</small>
+                                </li>
+                                <li style="margin-bottom: 0.8rem;">
+                                    <strong>React Developer Certification</strong><br>
+                                    <small style="color: #6b7280;">Meta</small>
+                                </li>
+                                <li style="margin-bottom: 0.8rem;">
+                                    <strong>JavaScript Algorithms</strong><br>
+                                    <small style="color: #6b7280;">freeCodeCamp</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="main-content">
+                        <!-- Professional Summary -->
+                        <div class="section">
+                            <h2 class="section-title">Professional Summary</h2>
+                            <p>Passionate Full Stack Developer with 5+ years of experience building scalable web
+                                applications. Proficient in modern JavaScript frameworks, backend technologies, and
+                                cloud services. Strong problem-solving skills and commitment to writing clean,
+                                maintainable code. Experienced in agile development methodologies and collaborative team
+                                environments.</p>
+                        </div>
+
+                        <!-- Experience -->
+                        <div class="section">
+                            <h2 class="section-title">Work Experience</h2>
+
+                            <div class="timeline-item">
+                                <div class="timeline-date">2022 - Present</div>
+                                <div class="timeline-title">Senior Full Stack Developer</div>
+                                <div class="timeline-company">TechCorp Solutions</div>
+                                <div class="timeline-description">
+                                    <ul>
+                                        <li>Led development of customer-facing web applications serving 100K+ users</li>
+                                        <li>Architected and implemented RESTful APIs using Node.js and Express</li>
+                                        <li>Optimized application performance, reducing load times by 40%</li>
+                                        <li>Mentored junior developers and conducted code reviews</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-date">2020 - 2022</div>
+                                <div class="timeline-title">Full Stack Developer</div>
+                                <div class="timeline-company">Digital Innovations Inc.</div>
+                                <div class="timeline-description">
+                                    <ul>
+                                        <li>Developed responsive web applications using React and Redux</li>
+                                        <li>Built and maintained backend services with Python and Django</li>
+                                        <li>Implemented automated testing strategies, increasing code coverage to 85%
+                                        </li>
+                                        <li>Collaborated with UX/UI designers to create intuitive user interfaces</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-date">2019 - 2020</div>
+                                <div class="timeline-title">Frontend Developer</div>
+                                <div class="timeline-company">StartupXYZ</div>
+                                <div class="timeline-description">
+                                    <ul>
+                                        <li>Created dynamic user interfaces using React and modern CSS</li>
+                                        <li>Integrated third-party APIs and payment gateways</li>
+                                        <li>Worked closely with product team to implement new features</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Education -->
+                        <div class="section">
+                            <h2 class="section-title">Education</h2>
+
+                            <div class="timeline-item">
+                                <div class="timeline-date">2015 - 2019</div>
+                                <div class="timeline-title">Bachelor of Science in Computer Science</div>
+                                <div class="timeline-company">University of California, Berkeley</div>
+                                <div class="timeline-description">
+                                    <p>Graduated Magna Cum Laude with focus on Software Engineering and Web
+                                        Technologies. Relevant coursework: Data Structures, Algorithms, Database
+                                        Systems, Web Development.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Projects -->
+                        <div class="section">
+                            <h2 class="section-title">Key Projects</h2>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <h3 style="color: #667eea; margin-bottom: 0.3rem;">E-Commerce Platform</h3>
+                                <p style="color: #6b7280; margin-bottom: 0.5rem;"><strong>Tech Stack:</strong> React,
+                                    Node.js, MongoDB, Stripe API</p>
+                                <p>Built a full-featured e-commerce platform with user authentication, product catalog,
+                                    shopping cart, and payment processing. Implemented admin dashboard for inventory
+                                    management.</p>
+                            </div>
+
+                            <div style="margin-bottom: 1.5rem;">
+                                <h3 style="color: #667eea; margin-bottom: 0.3rem;">Task Management App</h3>
+                                <p style="color: #6b7280; margin-bottom: 0.5rem;"><strong>Tech Stack:</strong> Vue.js,
+                                    Express, PostgreSQL</p>
+                                <p>Developed a collaborative task management application with real-time updates,
+                                    drag-and-drop functionality, and team collaboration features.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PDF Download functionality
+        async function downloadPDF() {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+
+            try {
+                // Get the resume element
+                const resume = document.getElementById('resume');
+
+                // Create canvas from HTML
+                const canvas = await html2canvas(resume, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                });
+
+                // Create PDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                // Calculate dimensions
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 295; // A4 height in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+
+                let position = 0;
+
+                // Add image to PDF
+                const imgData = canvas.toDataURL('image/png');
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                // Add new pages if content is longer than one page
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                // Save PDF
+                pdf.save('John_Developer_Resume.pdf');
+
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Print functionality (alternative to PDF)
+        function printResume() {
+            window.print();
+        }
+
+        // Add keyboard shortcut for download
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                downloadPDF();
+            }
+        });
+
+        // Animate skill bars on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            const skillBars = document.querySelectorAll('.skill-progress');
+
+            setTimeout(() => {
+                skillBars.forEach(bar => {
+                    bar.style.width = bar.style.width;
+                });
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>
