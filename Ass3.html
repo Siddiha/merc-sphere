@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 3 - WanderPeak & TechNest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Toggle Button */
+        .site-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .site-toggle:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        /* WanderPeak Travel Site */
+        .wanderpeak {
+            display: block;
+        }
+
+        .technest {
+            display: none;
+        }
+
+        /* WanderPeak Header */
+        .wp-header {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><rect fill="%234ade80" width="1200" height="400"/><path fill="%2322c55e" d="M0,200 Q300,100 600,200 T1200,200 V400 H0 V200z"/></svg>');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wp-nav {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            padding: 1rem 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .wp-nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .wp-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .wp-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .wp-hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .wp-hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .wp-btn {
+            background: #f59e0b;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .wp-btn:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+        }
+
+        /* WanderPeak Features */
+        .wp-features {
+            padding: 4rem 0;
+            background: #f8fafc;
+        }
+
+        .wp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .wp-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .wp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .wp-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .wp-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        /* TechNest Blog */
+        .tn-header {
+            background: #1f2937;
+            color: white;
+            padding: 2rem 0;
+        }
+
+        .tn-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .tn-logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .tn-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .tn-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .tn-nav a:hover {
+            color: #3b82f6;
+        }
+
+        .tn-hero {
+            text-align: center;
+        }
+
+        .tn-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .tn-hero p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* Blog Layout */
+        .blog-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            padding: 3rem 0;
+        }
+
+        .blog-content {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-image {
+            height: 200px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .blog-info {
+            padding: 1.5rem;
+        }
+
+        .blog-meta {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .blog-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .blog-excerpt {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .read-more:hover {
+            text-decoration: underline;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 15px;
+            height: fit-content;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sidebar ul li a {
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            color: #3b82f6;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .page-btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover,
+        .page-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .wp-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .tn-hero h1 {
+                font-size: 2rem;
+            }
+
+            .blog-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .wp-nav ul,
+            .tn-nav ul {
+                display: none;
+            }
+
+            .wp-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wp-hero h1 {
+                font-size: 2rem;
+            }
+
+            .wp-hero p {
+                font-size: 1.1rem;
+            }
+
+            .container {
+                padding: 0 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Toggle Button -->
+    <button class="site-toggle" onclick="toggleSite()">Switch to TechNest</button>
+
+    <!-- WanderPeak Travel Site -->
+    <div class="wanderpeak" id="wanderpeak">
+        <header class="wp-header">
+            <nav class="wp-nav">
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#destinations">Destinations</a></li>
+                    <li><a href="#tours">Tours</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="wp-hero">
+                <h1>WanderPeak</h1>
+                <p>Discover breathtaking destinations and create unforgettable memories</p>
+                <button class="wp-btn">Start Your Journey</button>
+            </div>
+        </header>
+
+        <section class="wp-features">
+            <div class="container">
+                <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem; color: #1f2937;">Why Choose
+                    WanderPeak?</h2>
+                <div class="wp-grid">
+                    <div class="wp-card">
+                        <div class="wp-icon">🏔️</div>
+                        <h3>Epic Adventures</h3>
+                        <p>From mountain peaks to ocean depths, discover the world's most spectacular destinations with
+                            expert guides.</p>
+                    </div>
+                    <div class="wp-card">
+                        <div class="wp-icon">✈️</div>
+                        <h3>Seamless Travel</h3>
+                        <p>We handle all the details so you can focus on making memories. Flights, hotels, and
+                            activities all sorted.</p>
+                    </div>
+                    <div class="wp-card">
+                        <div class="wp-icon">🌟</div>
+                        <h3>Unique Experiences</h3>
+                        <p>Go beyond typical tourist spots with curated experiences that showcase local culture and
+                            hidden gems.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- TechNest Blog -->
+    <div class="technest" id="technest">
+        <header class="tn-header">
+            <div class="container">
+                <nav class="tn-nav">
+                    <div class="tn-logo">TechNest</div>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#articles">Articles</a></li>
+                        <li><a href="#tutorials">Tutorials</a></li>
+                        <li><a href="#reviews">Reviews</a></li>
+                        <li><a href="#about">About</a></li>
+                    </ul>
+                </nav>
+                <div class="tn-hero">
+                    <h1>TechNest Blog</h1>
+                    <p>Your go-to source for the latest in technology, programming, and innovation</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="blog-layout">
+                <main class="blog-content">
+                    <article class="blog-card">
+                        <div class="blog-image">Featured Article Image</div>
+                        <div class="blog-info">
+                            <div class="blog-meta">Tech Trends • March 15, 2024 • 5 min read</div>
+                            <h2 class="blog-title">The Future of Artificial Intelligence in Web Development</h2>
+                            <p class="blog-excerpt">Explore how AI is revolutionizing the way we build and interact with
+                                websites, from automated code generation to intelligent user experiences.</p>
+                            <a href="#" class="read-more">Read More →</a>
+                        </div>
+                    </article>
+
+                    <article class="blog-card">
+                        <div class="blog-image">Programming Tutorial</div>
+                        <div class="blog-info">
+                            <div class="blog-meta">JavaScript • March 12, 2024 • 8 min read</div>
+                            <h2 class="blog-title">Mastering Modern JavaScript: ES2024 Features</h2>
+                            <p class="blog-excerpt">Dive into the latest JavaScript features and learn how to implement
+                                them in your projects for better performance and cleaner code.</p>
+                            <a href="#" class="read-more">Read More →</a>
+                        </div>
+                    </article>
+
+                    <article class="blog-card">
+                        <div class="blog-image">Web Security Guide</div>
+                        <div class="blog-info">
+                            <div class="blog-meta">Security • March 10, 2024 • 6 min read</div>
+                            <h2 class="blog-title">Essential Web Security Practices for 2024</h2>
+                            <p class="blog-excerpt">Protect your applications and users with these crucial security
+                                measures every developer should implement.</p>
+                            <a href="#" class="read-more">Read More →</a>
+                        </div>
+                    </article>
+                </main>
+
+                <aside class="sidebar">
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Popular Posts</h3>
+                        <ul>
+                            <li><a href="#">Getting Started with React Hooks</a></li>
+                            <li><a href="#">CSS Grid vs Flexbox: When to Use What</a></li>
+                            <li><a href="#">Building RESTful APIs with Node.js</a></li>
+                            <li><a href="#">Introduction to TypeScript</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Categories</h3>
+                        <ul>
+                            <li><a href="#">Web Development (24)</a></li>
+                            <li><a href="#">JavaScript (18)</a></li>
+                            <li><a href="#">React (12)</a></li>
+                            <li><a href="#">Node.js (10)</a></li>
+                            <li><a href="#">CSS (15)</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Tags</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            <span
+                                style="background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">JavaScript</span>
+                            <span
+                                style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">React</span>
+                            <span
+                                style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">CSS</span>
+                            <span
+                                style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Node.js</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="pagination">
+                <button class="page-btn">← Previous</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSite() {
+            const wanderpeak = document.getElementById('wanderpeak');
+            const technest = document.getElementById('technest');
+            const toggleBtn = document.querySelector('.site-toggle');
+
+            if (wanderpeak.style.display === 'none') {
+                wanderpeak.style.display = 'block';
+                technest.style.display = 'none';
+                toggleBtn.textContent = 'Switch to TechNest';
+            } else {
+                wanderpeak.style.display = 'none';
+                technest.style.display = 'block';
+                toggleBtn.textContent = 'Switch to WanderPeak';
+            }
+        }
+
+        // Pagination functionality
+        document.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (!this.textContent.includes('Previous') && !this.textContent.includes('Next')) {
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
