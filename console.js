@@ -1,1 +1,2 @@
-All the changes have been added here 
+let time = 6;
+let mytime = 55;
